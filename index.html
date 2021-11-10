@@ -143,6 +143,10 @@
             // timeupdate
             let min_duration = Math.floor(duration / 60);
             let sec_duration = Math.floor(duration % 60);
+          
+            if (sec_duration < 10) {
+                sec_duration = `0${sec_duration}`;
+            }
 
             let total_time = `${min_duration}:${sec_duration}`;
             if (duration) {
