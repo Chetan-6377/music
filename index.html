@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css"
+        integrity="sha512-BnbUDfEUfV0Slx6TunuB042k9tuKe3xrD6q4mg5Ed72LTgzDIcLPxg6yI2gcMFRyomt+yJJxE+zJwNmxki6/RA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="main_div">
+        <div class="music_container">
+            <marquee>
+                <h2 id="title"></h2>
+            </marquee>
+            <h3 id="artist"></h3>
+            <div class="img_container">
+                <img src="" alt="">
+            </div>
+            <audio src=""></audio>
+
+            <!-- progress bar -->
+            <div class="progress_container " id="progress_container">
+                <div class="duration">
+                    <div class="" id="current_time">0:00</div>
+                    <div id="final_time">0:00</div>
+                </div>
+                <div class="progress_div" id="progress_div">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+
+            <!-- controls -->
+
+            <div class="controls">
+                <i class="fas fa-backward" id="prev" title="Previous"></i>
+                <i class="fas fa-play main-btn" id="play" title="Play"></i>
+                <i class="fas fa-forward" id="next" title="Forward"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const music = document.querySelector("audio");
+        const img = document.querySelector("img");
+        const play = document.getElementById('play');
+        const artist = document.getElementById('artist');
+        const title = document.getElementById('title');
+        const prev = document.getElementById('prev');
+        const next = document.getElementById('next');
+        let progress = document.getElementById('progress');
+        let progress_div=document.getElementById('progress_div');
+        let current_time = document.getElementById('current_time');
+        let final_time = document.getElementById('final_time');
+
+        const songs = [
+            {
+                name: "Boureya",
+                title: "Boureya",
+                artist: "Anusha Mani",
+            },
+            {
+                name: "Kali-Kali",
+                title: "Kali-Kali",
+                artist: "Madhur Sharma",
+            },
+            {
+                name: "O Saajna",
+                title: "O Saajna",
+                artist: "Akhil Sachdeva",
+            },
+        ]
+
+        let isPlay = false;
+
+        let playMusic = () => {
+            isPlay = true;
+            music.play();
+            play.classList.replace('fa-play', 'fa-pause');
+            img.classList.add('anime');
+        }
+        // for pause
+        let pauseMusic = () => {
+            isPlay = false;
+            music.pause();
+            play.classList.replace('fa-pause', 'fa-play');
+            img.classList.remove('anime');
+        }
+        play.addEventListener('click', () => {
+            if (isPlay) {
+                pauseMusic();
+            }
+            else {
+                playMusic();
+            }
+            // isPlay ? pauseMusic() : playMusic();
+        })
+
+        // changing music data
+
+        const loadsongs = (songs) => {
+            title.textContent = songs.title;
+            artist.textContent = songs.artist;
+            music.src = `music/${songs.name}.mp3`;
+            img.src = `image/${songs.name}.jpeg`;
+        }
+
+        songIndex = 0;
+
+        loadsongs(songs[songIndex]);
+
+        const nextSongs = () => {
+            songIndex = (songIndex + 1) % songs.length;
+            loadsongs(songs[songIndex]);
+            playMusic();
+        }
+        const prevSongs = () => {
+            songIndex = (songIndex - 1 + songs.length) % songs.length;
+            loadsongs(songs[songIndex]);
+            playMusic();
+        }
+
+
+        // progress bar 
+        music.addEventListener("timeupdate", (event) => {
+            const { currentTime, duration } = event.srcElement
+
+            let progress_time = (currentTime / duration) * 100;
+            progress.style.width = `${progress_time}%`;
+
+            // timeupdate
+            let min_duration = Math.floor(duration / 60);
+            let sec_duration = Math.floor(duration % 60);
+
+            let total_time = `${min_duration}:${sec_duration}`;
+            if (duration) {
+
+                final_time.textContent = total_time;
+            }
+
+            //    currentTime update 
+            let min_currentTime = Math.floor(currentTime / 60);
+            let sec_currentTime = Math.floor(currentTime % 60);
+
+            if (sec_currentTime < 10) {
+                sec_currentTime = `0${sec_currentTime}`;
+            }
+            let start_time = `${min_currentTime}:${sec_currentTime}`;
+            current_time.textContent = start_time;
+        })
+
+
+        // progressdiv
+        progress_div.addEventListener('click', (event) => {
+            const { duration } = music;
+            let move_progress = (event.offsetX / event.srcElement.clientWidth) * duration;
+            music.currentTime = move_progress;
+        })
+
+        music.addEventListener("ended", nextSongs); //if music ends then next will start playing
+        next.addEventListener('click', nextSongs);
+        prev.addEventListener('click', prevSongs);
+
+
+    </script>
+</body>
+
+</html>
